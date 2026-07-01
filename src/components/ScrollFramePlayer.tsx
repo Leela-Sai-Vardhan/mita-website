@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 import { useScrollProgress } from '../hooks/useScrollProgress'
 
 const TOTAL_FRAMES = 211
@@ -47,32 +47,8 @@ export default function ScrollFramePlayer() {
   const loadedRef = useRef(false)
   const progress = useScrollProgress()
 
-  // Preload all images
-  useEffect(() => {
-    if (loadedRef.current) return
-    loadedRef.current = true
-    const images: HTMLImageElement[] = []
-
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const img = new Image()
-      img.src = `/frames/ezgif-frame-${pad(i)}.jpg`
-      images.push(img)
-    }
-
-    imagesRef.current = images
-
-    // Initial dark fill
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ensureCanvasSize(canvas)
-    ctx.fillStyle = '#0D0D0D'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-  }, [])
-
-  // Draw current frame on scroll
-  useEffect(() => {
+  // Pull out the draw logic so it can be called from anywhere
+  const drawFrame = useCallback((frameIndex: number) => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -80,42 +56,71 @@ export default function ScrollFramePlayer() {
 
     const { w, h } = ensureCanvasSize(canvas)
 
+    const img = imagesRef.current[frameIndex]
+    if (!img || !img.complete || img.naturalWidth === 0) return
+
+    drawCover(ctx, img, w, h)
+  }, [])
+
+  // Preload images & draw first frame once loaded
+  useEffect(() => {
+    if (loadedRef.current) return
+    loadedRef.current = true
+    const images: HTMLImageElement[] = []
+
+    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+      const img = new Image()
+
+      // When the very first frame loads, draw it immediately
+      if (i === 1) {
+        img.onload = () => drawFrame(0)
+      }
+
+      img.src = `/frames/ezgif-frame-${pad(i)}.jpg`
+      images.push(img)
+    }
+
+    imagesRef.current = images
+
+    // Try drawing frame 0 right now (browser cache hit)
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const { w, h } = ensureCanvasSize(canvas)
+
+    if (images[0]?.complete && images[0].naturalWidth > 0) {
+      drawCover(ctx, images[0], w, h)
+    } else {
+      // Dark fallback until frame 0 loads
+      ctx.fillStyle = '#0D0D0D'
+      ctx.fillRect(0, 0, w, h)
+    }
+  }, [drawFrame])
+
+  // Draw frame on scroll progress change
+  useEffect(() => {
     const frameIndex = Math.min(
       Math.floor(progress * (TOTAL_FRAMES - 1)),
       TOTAL_FRAMES - 1
     )
-
-    const img = imagesRef.current[frameIndex]
-    if (!img || !img.complete || img.naturalWidth === 0) return
-
-    // No clearRect — drawImage overwrites everything
-    drawCover(ctx, img, w, h)
-  }, [progress])
+    drawFrame(frameIndex)
+  }, [progress, drawFrame])
 
   // Redraw on resize
   useEffect(() => {
     const handleResize = () => {
-      const canvas = canvasRef.current
-      if (!canvas) return
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-
-      const { w, h } = ensureCanvasSize(canvas)
-
       const frameIndex = Math.min(
         Math.floor(progress * (TOTAL_FRAMES - 1)),
         TOTAL_FRAMES - 1
       )
-
-      const img = imagesRef.current[frameIndex]
-      if (!img || !img.complete || img.naturalWidth === 0) return
-
-      drawCover(ctx, img, w, h)
+      drawFrame(frameIndex)
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [progress])
+  }, [progress, drawFrame])
 
   return (
     <canvas
