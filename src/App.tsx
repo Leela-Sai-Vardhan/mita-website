@@ -8,7 +8,12 @@ import FeaturesSection from './components/FeaturesSection'
 import MitzySection from './components/MitzySection'
 import DownloadSection from './components/DownloadSection'
 
-const navLinks = ['Features', 'Premium', 'Download', 'News', 'Help']
+const navLinks = [
+  { label: 'Philosophy', href: '#philosophy' },
+  { label: 'Features', href: '#features' },
+  { label: 'Mitzy', href: '#mitzy' },
+  { label: 'Download', href: '#download' },
+]
 
 const MitaLogo = ({ size = 32 }: { size?: number }) => (
   <svg
@@ -65,11 +70,11 @@ function App() {
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
-                key={link}
-                href="#"
+                key={link.label}
+                href={link.href}
                 className="text-sm font-medium text-white/80 hover:text-white transition-colors"
               >
-                {link}
+                {link.label}
               </a>
             ))}
           </div>
@@ -156,8 +161,8 @@ function App() {
               <div className="flex flex-col px-6 py-6 gap-5">
                 {navLinks.map((link, i) => (
                   <motion.a
-                    key={link}
-                    href="#"
+                    key={link.label}
+                    href={link.href}
                     className="text-base font-medium text-white"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -166,8 +171,9 @@ function App() {
                       duration: 0.35,
                       ease: [0.22, 1, 0.36, 1],
                     }}
+                    onClick={() => setMenuOpen(false)}
                   >
-                    {link}
+                    {link.label}
                   </motion.a>
                 ))}
               </div>

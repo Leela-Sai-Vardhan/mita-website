@@ -4,7 +4,7 @@ const ease = [0.22, 1, 0.36, 1] as const
 
 export default function MitzySection() {
   return (
-    <section className="relative min-h-screen flex items-center px-5 sm:px-8 py-24">
+    <section id="mitzy" className="relative min-h-screen flex items-center px-5 sm:px-8 py-24">
       <div className="w-full max-w-[1280px] mx-auto">
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
           {/* Mitzy Image */}

@@ -28,7 +28,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section className="relative min-h-screen flex items-center px-5 sm:px-8 py-24">
+    <section id="features" className="relative min-h-screen flex items-center px-5 sm:px-8 py-24">
       <div className="w-full max-w-[1280px] mx-auto">
         <motion.p
           className="text-sm font-semibold tracking-widest uppercase mb-4"

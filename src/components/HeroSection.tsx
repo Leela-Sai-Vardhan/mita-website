@@ -19,7 +19,7 @@ const fadeUp = {
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center px-5 sm:px-8">
+    <section id="hero" className="relative min-h-screen flex items-center px-5 sm:px-8">
       <div className="w-full max-w-[1280px] mx-auto">
         <motion.div
           className="max-w-[560px]"

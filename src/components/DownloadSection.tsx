@@ -5,7 +5,7 @@ const ease = [0.22, 1, 0.36, 1] as const
 
 export default function DownloadSection() {
   return (
-    <section className="relative min-h-screen flex items-center px-5 sm:px-8 py-24">
+    <section id="download" className="relative min-h-screen flex items-center px-5 sm:px-8 py-24">
       <div className="w-full max-w-[1280px] mx-auto text-center">
         <motion.div
           className="max-w-2xl mx-auto"

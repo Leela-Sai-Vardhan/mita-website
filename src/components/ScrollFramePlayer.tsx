@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react'
 import { useScrollProgress } from '../hooks/useScrollProgress'
+import { useOrientation } from '../hooks/useOrientation'
 
 const TOTAL_FRAMES = 211
 
@@ -11,21 +12,48 @@ function drawCover(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
   cw: number,
-  ch: number
+  ch: number,
+  portrait: boolean
 ) {
-  const ir = img.naturalWidth / img.naturalHeight
-  const cr = cw / ch
-  let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight
+  if (portrait) {
+    // Rotate 90° so landscape image fills portrait screen
+    ctx.save()
+    ctx.translate(cw / 2, ch / 2)
+    ctx.rotate(Math.PI / 2)
 
-  if (ir > cr) {
-    sw = img.naturalHeight * cr
-    sx = (img.naturalWidth - sw) / 2
+    // After rotation, the visible area is ch wide × cw tall
+    const vw = ch
+    const vh = cw
+
+    const ir = img.naturalWidth / img.naturalHeight
+    const cr = vw / vh
+    let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight
+
+    if (ir > cr) {
+      sw = img.naturalHeight * cr
+      sx = (img.naturalWidth - sw) / 2
+    } else {
+      sh = img.naturalWidth / cr
+      sy = (img.naturalHeight - sh) / 2
+    }
+
+    ctx.drawImage(img, sx, sy, sw, sh, -vw / 2, -vh / 2, vw, vh)
+    ctx.restore()
   } else {
-    sh = img.naturalWidth / cr
-    sy = (img.naturalHeight - sh) / 2
-  }
+    const ir = img.naturalWidth / img.naturalHeight
+    const cr = cw / ch
+    let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight
 
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch)
+    if (ir > cr) {
+      sw = img.naturalHeight * cr
+      sx = (img.naturalWidth - sw) / 2
+    } else {
+      sh = img.naturalWidth / cr
+      sy = (img.naturalHeight - sh) / 2
+    }
+
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch)
+  }
 }
 
 function ensureCanvasSize(canvas: HTMLCanvasElement) {
@@ -46,8 +74,8 @@ export default function ScrollFramePlayer() {
   const imagesRef = useRef<HTMLImageElement[]>([])
   const loadedRef = useRef(false)
   const progress = useScrollProgress()
+  const portrait = useOrientation()
 
-  // Pull out the draw logic so it can be called from anywhere
   const drawFrame = useCallback((frameIndex: number) => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -59,8 +87,8 @@ export default function ScrollFramePlayer() {
     const img = imagesRef.current[frameIndex]
     if (!img || !img.complete || img.naturalWidth === 0) return
 
-    drawCover(ctx, img, w, h)
-  }, [])
+    drawCover(ctx, img, w, h, portrait)
+  }, [portrait])
 
   // Preload images & draw first frame once loaded
   useEffect(() => {
@@ -71,7 +99,6 @@ export default function ScrollFramePlayer() {
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image()
 
-      // When the very first frame loads, draw it immediately
       if (i === 1) {
         img.onload = () => drawFrame(0)
       }
@@ -82,7 +109,7 @@ export default function ScrollFramePlayer() {
 
     imagesRef.current = images
 
-    // Try drawing frame 0 right now (browser cache hit)
+    // Try frame 0 right now (browser cache)
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
@@ -91,13 +118,12 @@ export default function ScrollFramePlayer() {
     const { w, h } = ensureCanvasSize(canvas)
 
     if (images[0]?.complete && images[0].naturalWidth > 0) {
-      drawCover(ctx, images[0], w, h)
+      drawCover(ctx, images[0], w, h, portrait)
     } else {
-      // Dark fallback until frame 0 loads
       ctx.fillStyle = '#0D0D0D'
       ctx.fillRect(0, 0, w, h)
     }
-  }, [drawFrame])
+  }, [drawFrame, portrait])
 
   // Draw frame on scroll progress change
   useEffect(() => {
@@ -108,7 +134,7 @@ export default function ScrollFramePlayer() {
     drawFrame(frameIndex)
   }, [progress, drawFrame])
 
-  // Redraw on resize
+  // Redraw on resize or orientation change
   useEffect(() => {
     const handleResize = () => {
       const frameIndex = Math.min(
