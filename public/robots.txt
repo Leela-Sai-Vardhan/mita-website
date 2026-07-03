@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mita-android.vercel.app/sitemap.xml

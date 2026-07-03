@@ -80,21 +80,28 @@ function App() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <button
-              className="text-sm font-semibold text-white rounded-full px-5 py-2.5 transition-transform hover:scale-[1.04] active:scale-[0.96] cursor-pointer"
-              style={{ background: 'var(--color-accent)' }}
+            <a
+              href="https://play.google.com/store/apps/details?id=com.dreamstarx.mita&hl=en_IN"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold text-white rounded-full px-5 py-2.5 transition-transform hover:scale-[1.04] active:scale-[0.96] cursor-pointer inline-block"
+              style={{ background: 'var(--color-accent)', textDecoration: 'none' }}
             >
               Get Started
-            </button>
-            <button
-              className="text-sm font-semibold rounded-full px-5 py-2.5 transition-transform hover:scale-[1.04] active:scale-[0.96] cursor-pointer"
+            </a>
+            <a
+              href="https://github.com/Leela-Sai-Vardhan/mita"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold rounded-full px-5 py-2.5 transition-transform hover:scale-[1.04] active:scale-[0.96] cursor-pointer inline-block"
               style={{
                 background: 'var(--color-login-bg)',
                 color: 'var(--color-text)',
+                textDecoration: 'none',
               }}
             >
-              Sign In
-            </button>
+              GitHub
+            </a>
           </div>
 
           <button
@@ -179,21 +186,28 @@ function App() {
               </div>
               <div className="flex-1" />
               <div className="px-6 pb-8 flex flex-col gap-3">
-                <button
-                  className="text-sm font-semibold text-white rounded-full px-5 py-3 w-full text-center cursor-pointer"
-                  style={{ background: 'var(--color-accent)' }}
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.dreamstarx.mita&hl=en_IN"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-white rounded-full px-5 py-3 w-full text-center cursor-pointer inline-block"
+                  style={{ background: 'var(--color-accent)', textDecoration: 'none' }}
                 >
                   Get Started
-                </button>
-                <button
-                  className="text-sm font-semibold rounded-full px-5 py-3 w-full text-center cursor-pointer"
+                </a>
+                <a
+                  href="https://github.com/Leela-Sai-Vardhan/mita"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold rounded-full px-5 py-3 w-full text-center cursor-pointer inline-block"
                   style={{
                     background: 'var(--color-login-bg)',
                     color: 'var(--color-text)',
+                    textDecoration: 'none',
                   }}
                 >
-                  Sign In
-                </button>
+                  GitHub
+                </a>
               </div>
             </motion.div>
           </>
