@@ -50,7 +50,10 @@ export default function DownloadSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <motion.button
+            <motion.a
+              href="https://play.google.com/store/apps/details?id=com.dreamstarx.mita&hl=en_IN"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center justify-between transition-all cursor-pointer"
               style={{
                 background: 'var(--color-accent)',
@@ -64,21 +67,25 @@ export default function DownloadSection() {
                 minWidth: '210px',
                 gap: '32px',
                 border: 'none',
+                textDecoration: 'none',
               }}
               whileHover={{ scale: 1.04, filter: 'brightness(1.1)' }}
               whileTap={{ scale: 0.96 }}
             >
               Download for Android
               <ArrowRightCircle size={20} />
-            </motion.button>
+            </motion.a>
 
             <motion.a
-              href="#"
+              href="https://github.com/Leela-Sai-Vardhan/mita"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-6 py-4 rounded-full text-sm font-semibold transition-all"
               style={{
                 background: 'rgba(255,255,255,0.06)',
                 border: '1px solid rgba(255,255,255,0.1)',
                 color: 'var(--color-text)',
+                textDecoration: 'none',
               }}
               whileHover={{
                 scale: 1.04,
