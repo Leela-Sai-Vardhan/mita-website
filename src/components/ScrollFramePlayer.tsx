@@ -2,10 +2,10 @@ import { useRef, useEffect, useCallback } from 'react'
 import { useScrollProgress } from '../hooks/useScrollProgress'
 import { useOrientation } from '../hooks/useOrientation'
 
-const TOTAL_FRAMES = 211
+const TOTAL_FRAMES = 106
 
-function pad(n: number) {
-  return String(n).padStart(3, '0')
+function pad(i: number) {
+  return String(2 * i - 1).padStart(3, '0')
 }
 
 function drawCover(
